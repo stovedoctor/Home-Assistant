@@ -1,0 +1,96 @@
+alias: kitchen motion LD
+description: LD motion sensor kitch
+trigger:
+  - type: motion
+    platform: device
+    device_id: 0f087a6774ab35d8724a667feeb6772a
+    entity_id: ce46a02be823abb0d50f406a4b154985
+    domain: binary_sensor
+    id: "on"
+  - type: not_occupied
+    platform: device
+    device_id: 0f087a6774ab35d8724a667feeb6772a
+    entity_id: bf63783977038d73e2377e6dac016303
+    domain: binary_sensor
+    id: not occupied off
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - "on"
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: binary_sensor.do_not_disturb_time_block
+                state: "on"
+              - condition: device
+                type: is_on
+                device_id: a93cfecc32331b70dd71efe35b1e143f
+                entity_id: 5e512f06beaa9f10b46309251629e8d9
+                domain: light
+        sequence:
+          - type: turn_on
+            device_id: a93cfecc32331b70dd71efe35b1e143f
+            entity_id: 5e512f06beaa9f10b46309251629e8d9
+            domain: light
+          - device_id: 04e4f0e04b65456ba33a7595f370505b
+            domain: select
+            entity_id: 2a88bb222f852db1d85255df67ded788
+            type: select_option
+            option: Full white
+      - conditions:
+          - condition: trigger
+            id:
+              - "on"
+          - condition: state
+            entity_id: binary_sensor.do_not_disturb_time_block
+            state: "on"
+        sequence:
+          - device_id: 04e4f0e04b65456ba33a7595f370505b
+            domain: select
+            entity_id: 2a88bb222f852db1d85255df67ded788
+            type: select_option
+            option: Full white
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - not occupied off
+          - condition: state
+            entity_id: binary_sensor.do_not_disturb_time_block
+            state: "off"
+        sequence:
+          - service: light.turn_off
+            data:
+              transition: 31
+            target:
+              device_id:
+                - 04e4f0e04b65456ba33a7595f370505b
+              entity_id:
+                - light.kitchen_light
+      - conditions:
+          - condition: trigger
+            id:
+              - not occupied off
+          - condition: state
+            entity_id: binary_sensor.do_not_disturb_time_block
+            state: "on"
+        sequence:
+          - service: light.turn_off
+            data:
+              transition: 15
+            target:
+              device_id:
+                - a93cfecc32331b70dd71efe35b1e143f
+          - device_id: 04e4f0e04b65456ba33a7595f370505b
+            domain: select
+            entity_id: 2a88bb222f852db1d85255df67ded788
+            type: select_option
+            option: nightlight
+mode: single
