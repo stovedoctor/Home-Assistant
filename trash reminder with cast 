@@ -1,0 +1,102 @@
+alias: trash and recycle reminders calendar even days
+description: >-
+  play video on TVS and announcement on google mini's to take up green recycle
+  and black trash can. 
+mode: single
+triggers:
+  - at: "07:40:00"
+    trigger: time
+conditions:
+  - condition: time
+    weekday:
+      - thu
+    before: "00:00:00"
+    after: "00:00:00"
+  - condition: template
+    value_template: "{{(as_timestamp(now())|timestamp_custom ('%U') | int % 2) == 0 }}"
+actions:
+  - data:
+      volume_level: 0.68
+    target:
+      device_id:
+        - 9760ca49dae63712d715e97b418f0808
+    action: media_player.volume_set
+  - target:
+      entity_id: media_player.nestmini7847
+    data:
+      media_content_id: >-
+        media-source://tts/cloud?message=both+cans+need+to+go+up+this+week+see+alert+on+tv&language=en-US&gender=female
+      media_content_type: provider
+    metadata:
+      title: both cans need to go up this week see alert on tv
+      thumbnail: https://brands.home-assistant.io/_/cloud/logo.png
+      media_class: app
+      children_media_class: null
+      navigateIds:
+        - {}
+        - media_content_type: app
+          media_content_id: media-source://tts
+        - media_content_type: provider
+          media_content_id: >-
+            media-source://tts/cloud?message=both+cans+need+to+go+up+this+week+see+alert+on+tv&language=en-US&gender=female
+    action: media_player.play_media
+  - target:
+      entity_id: media_player.livingroomtv
+    data:
+      media_content_id: media-source://media_source/local/bothcans.mov
+      media_content_type: video/quicktime
+    metadata:
+      title: bothcans.mov
+      thumbnail: null
+      media_class: video
+      children_media_class: null
+      navigateIds:
+        - {}
+        - media_content_type: app
+          media_content_id: media-source://media_source
+    action: media_player.play_media
+  - target:
+      entity_id: media_player.bedroom_tv
+    data:
+      media_content_id: media-source://media_source/local/bothcans.mov
+      media_content_type: video/quicktime
+    metadata:
+      title: bothcans.mov
+      thumbnail: null
+      media_class: video
+      children_media_class: null
+      navigateIds:
+        - {}
+        - media_content_type: app
+          media_content_id: media-source://media_source
+    action: media_player.play_media
+  - target:
+      entity_id: media_player.kitchen_nest
+    data:
+      media_content_id: media-source://media_source/local/bothcans.mov
+      media_content_type: video/quicktime
+    metadata:
+      title: bothcans.mov
+      thumbnail: null
+      media_class: video
+      children_media_class: null
+      navigateIds:
+        - {}
+        - media_content_type: app
+          media_content_id: media-source://media_source
+    action: media_player.play_media
+  - target:
+      entity_id: media_player.kirsten_s_tv
+    data:
+      media_content_id: media-source://media_source/local/garbage.mov
+      media_content_type: video/quicktime
+    metadata:
+      title: garbage.mov
+      thumbnail: null
+      media_class: video
+      children_media_class: null
+      navigateIds:
+        - {}
+        - media_content_type: app
+          media_content_id: media-source://media_source
+    action: media_player.play_media
