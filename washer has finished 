@@ -1,0 +1,118 @@
+alias: "washer has finished "
+description: ""
+use_blueprint:
+  path: >-
+    sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml
+  input:
+    power_sensor: sensor.washer_energy_power
+    actions:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.work_time_time_block
+                state: "off"
+            sequence:
+              - data: {}
+                target:
+                  entity_id: input_button.washer_done_button
+                action: input_button.press
+              - device_id: 04e4f0e04b65456ba33a7595f370505b
+                domain: select
+                entity_id: select.counter_preset
+                type: select_option
+                option: police
+              - delay:
+                  hours: 0
+                  minutes: 0
+                  seconds: 15
+                  milliseconds: 0
+              - device_id: 04e4f0e04b65456ba33a7595f370505b
+                domain: select
+                entity_id: select.counter_preset
+                type: select_option
+                option: Full white
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.work_time_time_block
+                state: "on"
+            sequence:
+              - device_id: 04e4f0e04b65456ba33a7595f370505b
+                domain: select
+                entity_id: select.counter_preset
+                type: select_option
+                option: police
+              - delay:
+                  hours: 0
+                  minutes: 0
+                  seconds: 15
+                  milliseconds: 0
+              - device_id: 04e4f0e04b65456ba33a7595f370505b
+                domain: select
+                entity_id: select.counter_preset
+                type: select_option
+                option: Full white
+              - data:
+                  brightness_pct: 100
+                  profile: default
+                  effect: Strobe
+                target:
+                  entity_id: light.bathroom_lamp
+                action: light.turn_on
+              - data: {}
+                target:
+                  entity_id: input_button.washer_done_work_time
+                action: input_button.press
+              - device_id: 55e85dfb7ada9deabe4247ec9b58dabf
+                domain: select
+                entity_id: cc3a7816476db4da8a06eefb28d234c2
+                type: select_option
+                option: Strobe Mega
+              - delay:
+                  hours: 0
+                  minutes: 0
+                  seconds: 15
+                  milliseconds: 0
+              - device_id: 55e85dfb7ada9deabe4247ec9b58dabf
+                domain: select
+                entity_id: f2b75544cb11aee881a125f8d4f4fa3a
+                type: select_first
+              - action: light.turn_off
+                metadata: {}
+                data: {}
+                target:
+                  device_id: 5f1902fd3b0047a466f4ae48d19b08fb
+        enabled: true
+      - data:
+          qos: 0
+          topic: hasp/plates/command/jsonl
+          payload: >-
+            {"page":0,"id":69,"obj":"msgbox","bg_color":"white","text_color":"Red","text":"\uE026
+            Washing Is Done \uE72A Do you want Smelly
+            Undies?","options":["Close"]}
+        action: mqtt.publish
+      - data:
+          brightness_pct: 100
+        target:
+          entity_id:
+            - light.desk1_backlight
+            - light.desk_backlight
+            - light.plate35_backlight
+        action: light.turn_on
+      - data:
+          text: washer is done. switch laundry
+        action: rest_command.wled2_text
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - data:
+          text: Hey YOU!! Switch the laundry!!!
+        action: rest_command.wled2_text
+      - repeat:
+          count: 4
+          sequence: []
+    starting_hysteresis: 1.75
+    finishing_hysteresis: 6
+    starting_threshold: 59
+    finishing_threshold: 4
